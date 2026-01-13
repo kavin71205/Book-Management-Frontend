@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001";
+const API_URL = "https://book-management-backend-rk86.onrender.com";
 
 export async function loginUser(email, password) {
   const res = await fetch(`${API_URL}/auth/login`, {
@@ -9,17 +9,19 @@ export async function loginUser(email, password) {
   return res.json();
 }
 export async function signup(email, password) {
-  const res = await fetch("http://localhost:3001/auth/signup", {
+  const res = await fetch(`${API_URL}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
 
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error("Signup failed");
+    throw new Error(data.message || "Signup failed");
   }
 
-  return res.json();
+  return data;
 }
 export async function getBooks(token) {
   const res = await fetch(`${API_URL}/books`, {
