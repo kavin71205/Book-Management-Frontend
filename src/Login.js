@@ -1,29 +1,68 @@
 import { useState } from "react";
-import { loginUser } from "./api";
-import { signup } from "./api";
-
+const API_URL = "https://book-management-backend-rk86.onrender.com";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleLogin() {
-    const res = await loginUser(email, password);
-    if (res.token) {
-      localStorage.setItem("token", res.token);
-      onLogin(res.token);
-    } else {
-      alert("Login failed");
-    }
-  }
-  async function handleSignup() {
+  const handleLogin = async () => {
   try {
-    await signup(email, password); 
-    alert("Signup successful. Please login.");
+    setLoading(true);
+
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("token", data.token);
+      onLogin(data.token);
+      alert("Login successful");
+    } else {
+      alert(data.message || "Login failed");
+    }
+
   } catch (err) {
-    alert("Signup failed");
+    alert("Server error");
+  } finally {
+    setLoading(false);
   }
-}
+};
+  const handleSignup = async () => {
+  try {
+    setLoading(true);
+
+    const response = await fetch(`${API_URL}/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Signup successful");
+    } else {
+      alert(data.message || "Signup failed");
+    }
+
+  } catch (err) {
+    alert("Server error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
   <div className="flex justify-center mt-16">
@@ -50,21 +89,19 @@ export default function Login({ onLogin }) {
       />
 
       <button
-        onClick={handleLogin}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg
-                   font-medium hover:bg-blue-700 transition"
-      >
-        Login
-      </button>
+  onClick={handleLogin}
+  disabled={loading}
+  className="w-full bg-blue-600 text-white py-2 rounded-lg"
+>Login
+</button>
 
-      <button onClick={handleSignup}
-        className="w-full bg-blue-600 text-white py-2 rounded-lg mt-3
-                   font-medium hover:bg-blue-700 transition"
-      >
-        SignUp
+      <button onClick={handleSignup} disabled={loading}
+       className="w-full bg-blue-600 text-white py-2 rounded-lg mt-3"
+>
+      SignUp
       </button>
 
     </div>
-  </div>
+    </div>
 );
 }

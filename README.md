@@ -11,8 +11,6 @@ https://vercel.com/kavin71205s-projects/book-management-frontend/BCCJcsk6GEPafHN
 - **Backend API**  
 https://book-management-backend-rk86.onrender.com
 
----
-
 ## Features
 
 - User Signup & Login
